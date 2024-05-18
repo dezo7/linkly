@@ -1,0 +1,45 @@
+.welcome-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+    border-width: 0px 1px;
+    border-color: #ddd;
+    border-style: solid;
+}
+
+.welcome-container-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* .welcome-container-content */
+
+.welcome-content-title {
+    display: flex;
+    justify-content: center;
+    font-size: 2em;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.welcome-content-p {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+.welcome-buttons {
+    display: flex;
+    flex-direction: column;
+    padding: 0px 10px;
+    gap: 10px;
+}
+
+.welcome-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+}

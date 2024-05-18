@@ -1,0 +1,53 @@
+.home-title {
+    display: flex;
+    justify-content: space-around;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: #ddd;
+    background-color: #f5f5f5;
+}
+
+.home-title-titles {
+    font-weight: bold;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.newpost {
+    display: block;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: #ddd;
+}
+
+.newpost-input {
+    width: 100%;
+    box-sizing: border-box;
+    resize: none;
+    font-family: Lexend Deca, sans-serif;
+    font-size: 16px;
+    border-width: 0px;
+    border-color: #ddd;
+    padding: 10px;
+}
+
+.newpost-button {
+    border-width: 1px 0px 0px 0px;
+    border-radius: 0;
+    transition: color 0.3s ease;
+}
+
+.newpost-button:disabled {
+    color: #ccc;
+    cursor: default;
+}
+
+.home-no-posts-message {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    padding: 10px;
+}

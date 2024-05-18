@@ -1,0 +1,116 @@
+.postdetail-title {
+  display: flex;
+  justify-content: space-around;
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+  border-color: #ddd;
+}
+
+.postdetail-title-title {
+  font-weight: bold;
+  padding: 10px;
+}
+
+.postdetail-item {
+  display: block;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+  border-color: #ddd;
+  padding: 10px;
+}
+
+.postdetail-item-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.postdetail-item-title-left .postdetail-item-title-name {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.postdetail-item-title-username {
+  cursor: pointer;
+}
+
+.postdetail-item-title-right {
+  position: relative;
+  cursor: pointer;
+}
+
+.postdetail-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid gray;
+  z-index: 1000;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.postdetail-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0px;
+}
+
+.postdetail-menu li {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  gap: 5px;
+}
+
+.postdetail-menu ul li {
+  transition: background-color 0.3s ease;
+}
+
+.postdetail-menu ul li:hover {
+  background-color: #f0f0f0;
+}
+
+.postdetail-item-interactions {
+  display: flex;
+  gap: 15px;
+}
+
+.postdetail-item-interactions-likes {
+  cursor: pointer;
+}
+
+.postdetail-item-content {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+
+.newcomment {
+  display: block;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+  border-color: #ddd;
+}
+
+.newcomment-input {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  font-family: Lexend Deca, sans-serif;
+  font-size: 16px;
+  border-width: 0px;
+  border-color: #ddd;
+  padding: 10px;
+}
+
+.newcomment-button {
+  border-width: 1px 0px 0px 0px;
+  border-radius: 0;
+  transition: color 0.3s ease;
+}

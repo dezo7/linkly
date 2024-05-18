@@ -1,0 +1,85 @@
+.signup-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+    border-width: 0px 1px;
+    border-color: #ddd;
+    border-style: solid;
+}
+
+.signup-container-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.signup-container-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.signup-content-title {
+    display: flex;
+    justify-content: center;
+    font-size: 2em;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.signup-content-inputs {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0px;
+}
+
+.signup-buttons {
+    display: flex;
+    flex-direction: column;
+    padding: 0px 10px;
+    gap: 10px;
+}
+
+.signup-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+}
+
+.signup-content-inputs-groups {
+    display: flex;
+    align-items: center;
+    padding: 0px 10px;
+}
+
+.signup-content-inputs-groups label {
+    width: 21%;
+    margin-right: 10px;
+    text-align: right;
+}
+
+.signup-content-inputs-groups input {
+    width: 79%;
+    padding: 5px;
+}
+
+.signup-success-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 128, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.signup-blurred {
+    filter: blur(5px);
+}

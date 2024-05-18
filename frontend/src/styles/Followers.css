@@ -1,0 +1,25 @@
+.followers-title {
+    display: flex;
+    justify-content: space-around;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: #ddd;
+    background-color: #f5f5f5;
+}
+
+.followers-title-title {
+    font-weight: bold;
+    padding: 10px;
+}
+
+.followers-users {
+    cursor: pointer;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: #ddd;
+    padding: 5px;
+}
+
+.followers-users:hover {
+    background-color: #f0f0f0;
+}

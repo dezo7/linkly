@@ -1,0 +1,80 @@
+.postcard-item {
+  display: block;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+  border-color: #ddd;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.postcard-item:hover {
+  background-color: #f0f0f0;
+}
+
+.postcard-item-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.postcard-item-title-left .postcard-item-title-name {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.postcard-item-title-username {
+  cursor: pointer;
+}
+
+.postcard-item-title-right {
+  position: relative;
+}
+
+.postcard-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid gray;
+  z-index: 1000;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.postcard-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0px;
+}
+
+.postcard-menu li {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  gap: 5px;
+}
+
+.postcard-menu ul li {
+  transition: background-color 0.3s ease;
+}
+
+.postcard-menu ul li:hover {
+  background-color: #f0f0f0;
+}
+
+/* 
+    .postcard-item-interactions-likes
+    .postcard-item-interactions-comments
+  */
+
+.postcard-item-interactions {
+  display: flex;
+  gap: 15px;
+}
+
+.postcard-item-content {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

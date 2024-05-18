@@ -1,0 +1,105 @@
+.commentcard-item {
+    display: block;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: #ddd;
+    padding: 10px;
+}
+
+.commentcard-item-title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.commentcard-item-title-left .commentcard-item-title-name {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.commentcard-item-title-right {
+    position: relative;
+    cursor: pointer;
+}
+
+.commentcard-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid gray;
+    z-index: 1000;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.commentcard-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0px;
+}
+
+.commentcard-menu li {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    gap: 5px;
+}
+
+.commentcard-menu ul li {
+    transition: background-color 0.3s ease;
+    /* Transición suave */
+}
+
+.commentcard-menu ul li:hover {
+    background-color: #f0f0f0;
+    /* Cambia el color al pasar el mouse */
+}
+
+.commentcard-item-interactions {
+    display: flex;
+    gap: 15px;
+}
+
+.commentcard-item-interactions-likes {
+    cursor: pointer;
+}
+
+.comment-input {
+    width: 100%;
+    box-sizing: border-box;
+    resize: none;
+    font-family: Lexend Deca, sans-serif;
+    font-size: 16px;
+    border-width: 0px;
+    border-color: #ddd;
+    padding: 10px;
+}
+
+.newcomment {
+    display: block;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: #ddd;
+}
+
+.newcomment-button {
+    border-width: 1px 0px 0px 0px;
+    border-radius: 0;
+    transition: color 0.3s ease;
+}
+
+.newcomment-button:disabled {
+    color: #ccc;
+    cursor: default;
+}
+
+.commentcard-item-content {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
