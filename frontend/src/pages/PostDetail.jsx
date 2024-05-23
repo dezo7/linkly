@@ -10,6 +10,7 @@ function PostDetail() {
     const { username, id } = useParams();
     const [post, setPost] = useState(null);
     const [showMenu, setShowMenu] = useState(null);
+    const [isFollowing, setIsFollowing] = useState();
     const [commentContent, setCommentContent] = useState('');
     const menuRef = useRef(null);
     const menuContainerRef = useRef(null);
@@ -75,6 +76,25 @@ function PostDetail() {
                 console.error('Error:', error);
             });
     };
+
+    const handleFollow = () => {
+        const userId = post.user_id
+        fetch(`http://127.0.0.1:5000/follow/${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${store.token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.newFollowerCount !== undefined) {
+                    setIsFollowing(!isFollowing);
+                }
+            })
+            .catch(err => console.error('Error:', err));
+    };
+
 
     const handleSubmitComment = (event) => {
         event.preventDefault();
@@ -159,10 +179,25 @@ function PostDetail() {
                                     <div className='postdetail-menu' ref={menuContainerRef}>
                                         <ul>
                                             {store.user.username !== post.author_username && (
-                                                <li onClick={() => navigate(`/${post.author_username}`)}>
-                                                    <i className='fa-solid fa-user'></i>
-                                                    Profile
-                                                </li>
+                                                <>
+                                                    <li onClick={handleFollow}>
+                                                        {isFollowing ? (
+                                                            <>
+                                                                <i className="fa-solid fa-minus"></i>
+                                                                Unfollow
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <i className="fa-solid fa-plus"></i>
+                                                                Follow
+                                                            </>
+                                                        )}
+                                                    </li>
+                                                    <li onClick={() => navigate(`/${post.author_username}`)}>
+                                                        <i className='fa-solid fa-user'></i>
+                                                        Profile
+                                                    </li>
+                                                </>
                                             )}
                                             {store.user.username === post.author_username && (
                                                 <li onClick={handleDelete}>

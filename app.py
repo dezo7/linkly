@@ -231,6 +231,8 @@ def get_feed():
         ))
     ).order_by(Post.created_at.desc()).all()
 
+    followed_ids = set(follow.followed_id for follow in Follow.query.filter_by(follower_id=current_user_id).all())
+
     result = [
         {
             "id": post.id,
@@ -242,12 +244,12 @@ def get_feed():
             "author_username": post.user.username,
             "likes_count": len(post.likes),
             "liked_by_me": any(like.user_id == current_user_id for like in post.likes),
-            "comments_count": len(post.comments)
+            "comments_count": len(post.comments),
+            "author_is_following": post.user_id in followed_ids
         }
         for post in posts
     ]
     return jsonify(result)
-
 
 @app.route('/all_posts', methods=['GET'])
 @jwt_required()
@@ -258,6 +260,8 @@ def get_all_posts():
         joinedload(Post.comments).joinedload(Comment.user)
     ).order_by(Post.created_at.desc()).all()
 
+    followed_ids = set(follow.followed_id for follow in Follow.query.filter_by(follower_id=current_user_id).all())
+
     result = [
         {
             "id": post.id,
@@ -269,7 +273,8 @@ def get_all_posts():
             "author_username": post.user.username,
             "likes_count": len(post.likes),
             "liked_by_me": any(like.user_id == current_user_id for like in post.likes),
-            "comments_count": len(post.comments)
+            "comments_count": len(post.comments),
+            "author_is_following": post.user_id in followed_ids
         }
         for post in posts
     ]
@@ -288,6 +293,7 @@ def get_post(username, post_id):
     if not post or post.user.username != username:
         return jsonify({"error": "Post not found"}), 404
     
+    followed_ids = set(follow.followed_id for follow in Follow.query.filter_by(follower_id=current_user_id).all())
     sorted_comments = sorted(post.comments, key=lambda x: x.created_at)
 
     post_data = {
@@ -304,12 +310,14 @@ def get_post(username, post_id):
             {
                 "comment_id": comment.id,
                 "comment_content": comment.content,
+                "comment_author_id": comment.user_id,
                 "comment_author_name": comment.user.first_name,
                 "comment_author_lastname": comment.user.last_name,
                 "comment_author_username": comment.user.username,
                 "comment_created_at": format_datetime(comment.created_at),
                 "likes_count": len(comment.likes),
-                "liked_by_me": any(like.user_id == current_user_id for like in comment.likes)
+                "liked_by_me": any(like.user_id == current_user_id for like in comment.likes),
+                "is_following": comment.user_id in followed_ids
             } for comment in sorted_comments
         ]
     }

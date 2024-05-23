@@ -8,6 +8,7 @@ function PostCard({ post }) {
     const { store } = useContext(Context);
     const [likesCount, setLikesCount] = useState(post.likes_count);
     const [likedByMe, setLikedByMe] = useState(post.liked_by_me);
+    const [isFollowing, setIsFollowing] = useState(post.author_is_following);
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
     const menuContainerRef = useRef(null);
@@ -66,6 +67,26 @@ function PostCard({ post }) {
             });
     };
 
+    const handleFollow = (event) => {
+        event.stopPropagation();
+        const userId = post.user_id;
+        console.log(post.author_id)
+        fetch(`http://127.0.0.1:5000/follow/${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${store.token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.newFollowerCount !== undefined) {
+                    setIsFollowing(!isFollowing);
+                }
+            })
+            .catch(err => console.error('Error:', err));
+    };
+
     const toggleMenu = (event) => {
         event.stopPropagation();
         if (showMenu && menuRef.current && menuRef.current.contains(event.target)) {
@@ -122,10 +143,25 @@ function PostCard({ post }) {
                         <div className='postcard-menu' ref={menuContainerRef}>
                             <ul>
                                 {store.user.username !== post.author_username && (
-                                    <li onClick={(e) => handleNavigateToUserProfile(e, post.author_username)}>
-                                        <i className='fa-solid fa-user'></i>
-                                        Profile
-                                    </li>
+                                    <>
+                                        <li onClick={handleFollow}>
+                                            {isFollowing ? (
+                                                <>
+                                                    <i className="fa-solid fa-minus"></i>
+                                                    Unfollow
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="fa-solid fa-plus"></i>
+                                                    Follow
+                                                </>
+                                            )}
+                                        </li>
+                                        <li onClick={(e) => handleNavigateToUserProfile(e, post.author_username)}>
+                                            <i className='fa-solid fa-user'></i>
+                                            Profile
+                                        </li>
+                                    </>
                                 )}
                                 {store.user.username === post.author_username && (
                                     <li onClick={handleDeletePost}>

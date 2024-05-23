@@ -8,6 +8,7 @@ function CommentCard({ comment, onDelete }) {
     const { store } = useContext(Context);
     const [likesCount, setLikesCount] = useState(comment.likes_count);
     const [likedByMe, setLikedByMe] = useState(comment.liked_by_me);
+    const [isFollowing, setIsFollowing] = useState(comment.is_following);
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
     const menuContainerRef = useRef(null);
@@ -58,6 +59,24 @@ function CommentCard({ comment, onDelete }) {
             });
     };
 
+    const handleFollow = () => {
+        const userId = comment.comment_author_id;
+        fetch(`http://127.0.0.1:5000/follow/${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${store.token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.newFollowerCount !== undefined) {
+                    setIsFollowing(!isFollowing);
+                }
+            })
+            .catch(err => console.error('Error:', err));
+    };
+
     const handleDelete = () => {
         const url = `http://127.0.0.1:5000/comments/${comment.comment_id}`;
         fetch(url, {
@@ -93,7 +112,7 @@ function CommentCard({ comment, onDelete }) {
                         </Link>
                     </span>&nbsp;·&nbsp;
                     <span title={comment.comment_created_at.absolute}>
-                            {comment.comment_created_at.relative}
+                        {comment.comment_created_at.relative}
                     </span>
                 </div>
                 <div className='commentcard-item-title-right'>
@@ -104,9 +123,23 @@ function CommentCard({ comment, onDelete }) {
                         <div className='commentcard-menu' ref={menuContainerRef}>
                             <ul>
                                 {store.user.username !== comment.comment_author_username && (
-                                    <li onClick={() => navigate(`/${comment.comment_author_username}`)}>
-                                        <i className='fa-solid fa-user'></i> Profile
-                                    </li>
+                                    <>
+
+                                        <li onClick={() => navigate(`/${comment.comment_author_username}`)}>
+                                            <i className='fa-solid fa-user'></i>Profile
+                                        </li>
+                                        <li onClick={handleFollow}>
+                                            {isFollowing ? (
+                                                <>
+                                                    <i className="fa-solid fa-minus"></i>Unfollow
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="fa-solid fa-plus"></i>Follow
+                                                </>
+                                            )}
+                                        </li>
+                                    </>
                                 )}
                                 {store.user.username === comment.comment_author_username && (
                                     <li onClick={handleDelete}>
