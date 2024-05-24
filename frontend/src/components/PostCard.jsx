@@ -70,7 +70,6 @@ function PostCard({ post }) {
     const handleFollow = (event) => {
         event.stopPropagation();
         const userId = post.user_id;
-        console.log(post.author_id)
         fetch(`http://127.0.0.1:5000/follow/${userId}`, {
             method: 'POST',
             headers: {

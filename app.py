@@ -141,26 +141,28 @@ def validate_token():
 def get_user_profile(username):
     user = User.query.filter_by(username=username).first()
     if user:
-        # Asumimos que necesitamos el id del usuario actual para verificar los 'liked by me'
-        current_user_id = get_jwt_identity()  # Asegúrate de que este método esté disponible y configurado
-
+        current_user_id = get_jwt_identity()
         posts = Post.query.filter_by(user_id=user.id).order_by(Post.created_at.desc()).all()
+        followed_ids = set(follow.followed_id for follow in Follow.query.filter_by(follower_id=current_user_id).all())
+
         posts_data = [
             {
                 "id": post.id,
                 "content": post.content,
                 "created_at": format_datetime(post.created_at),
+                "user_id": post.user_id,
                 "author_name": user.first_name,
                 "author_lastname": user.last_name,
                 "author_username": user.username,
                 "likes_count": len(post.likes),
                 "liked_by_me": any(like.user_id == current_user_id for like in post.likes),
-                "comments_count": len(post.comments)  # Agregado conteo de comentarios
+                "comments_count": len(post.comments),
+                "author_is_following": post.user_id in followed_ids
             } for post in posts
         ]
+
         followers = user.followers.count()
         following = user.following.count()
-
         is_following = any(follower.follower_id == current_user_id for follower in user.followers)
 
         return jsonify({
@@ -173,7 +175,7 @@ def get_user_profile(username):
             "posts": posts_data,
             "followers": followers,
             "following": following,
-            "is_following": is_following  # Añadido para indicar si el usuario actual sigue al usuario del perfil
+            "is_following": is_following
         }), 200
     else:
         return jsonify({"error": "User not found"}), 404
@@ -361,7 +363,7 @@ def toggle_post_like(post_id):
 
     new_likes_count = PostLike.query.filter_by(post_id=post_id).count()
     return jsonify({"message": "Like updated successfully", "new_likes_count": new_likes_count, "liked_by_me": liked_by_me}), 200
-    
+
 @app.route('/comments/<int:comment_id>/toggle_like', methods=['POST'])
 @jwt_required()
 def toggle_comment_like(comment_id):
@@ -425,7 +427,6 @@ def delete_comment(comment_id):
 def search_users():
     query = request.args.get('q', '')
     if query:
-        # Dividir la consulta en palabras y crear las variantes nombre-apellido y apellido-nombre
         words = query.split()
         if len(words) >= 2:
             first_last = ' '.join(words)

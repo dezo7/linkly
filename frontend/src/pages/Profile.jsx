@@ -21,7 +21,6 @@ function Profile() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Profile data:', data);
                 if (data.error) {
                     setError(data.error);
                 } else {
@@ -97,7 +96,7 @@ function Profile() {
                 <div className='profile-title-title'>Posts</div>
             </div>
             {profile.posts.map(post => (
-                <PostCard key={post.id} post={post} showFullUsername={true} />
+                <PostCard key={post.id} post={post} />
             ))}
         </>
     );
