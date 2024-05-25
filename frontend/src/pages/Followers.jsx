@@ -4,8 +4,8 @@ import { Context } from '../store/appContext';
 import '../styles/Followers.css'
 
 function Followers() {
-    const { username } = useParams();
     const navigate = useNavigate();
+    const { username } = useParams();
     const { store } = useContext(Context);
     const [followers, setFollowers] = useState([]);
     const [error, setError] = useState('');
@@ -36,6 +36,33 @@ function Followers() {
         navigate(`/${userUsername}`);
     };
 
+    const handleRemoveFollower = (e, userUsername, index) => {
+        e.stopPropagation();
+        fetch(`http://127.0.0.1:5000/remove_follower/${userUsername}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${store.token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Removed follower successfully') {
+                    setFollowers(prevFollowers => {
+                        const updatedFollowers = [...prevFollowers];
+                        updatedFollowers.splice(index, 1);
+                        return updatedFollowers;
+                    });
+                } else {
+                    setError(data.error || 'Failed to remove follower');
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                setError('Failed to remove follower');
+            });
+    };
+
     if (error) {
         return <div>Error: {error}</div>;
     }
@@ -47,9 +74,16 @@ function Followers() {
                     Followers of {username}
                 </div>
             </div>
-            {followers.map(user => (
+            {followers.map((user, index) => (
                 <div className='followers-users' key={user.username} onClick={() => handleNavigateToUserProfile(user.username)}>
-                    <b>{user.name}</b> @{user.username}
+                    <div className='followers-users-left'>
+                        <b>{user.name}</b> @{user.username}
+                    </div>
+                    {store.user.username === username && (
+                        <div className='followers-users-right' onClick={(e) => handleRemoveFollower(e, user.username, index)}>
+                            <i className="fa-solid fa-xmark"></i>
+                        </div>
+                    )}
                 </div>
             ))}
         </>
