@@ -26,58 +26,6 @@ Migrate(app, db)
 jwt = JWTManager(app)
 cors = CORS(app, origins=["http://localhost:5173"])
 
-# Utilidades
-def format_datetime(value):
-    if not value:
-        return {"relative": "", "absolute": ""}
-
-    # Asegurar que value sea "aware"
-    if value.tzinfo is None:
-        value = value.replace(tzinfo=timezone.utc)
-
-    # Formato absoluto
-    absolute_format = value.strftime("%d/%m/%Y %H:%M")
-
-    now = datetime.now(tz=timezone.utc)
-    diff = now - value
-    seconds = diff.total_seconds()
-
-    # Calcular los intervalos directamente en segundos
-    minute = 60
-    hour = minute * 60
-    day = hour * 24
-    week = day * 7
-    month = day * 30
-    year = day * 365
-
-    # Formato relativo
-    if seconds < minute:
-        count = int(seconds)
-        relative_format = f"{count} second" + ("s" if count != 1 else "")
-    elif seconds < hour:
-        count = int(seconds // minute)
-        relative_format = f"{count} minute" + ("s" if count != 1 else "")
-    elif seconds < day:
-        count = int(seconds // hour)
-        relative_format = f"{count} hour" + ("s" if count != 1 else "")
-    elif seconds < week:
-        count = int(seconds // day)
-        relative_format = f"{count} day" + ("s" if count != 1 else "")
-    elif seconds < week * 4:
-        count = int(seconds // week)
-        relative_format = f"{count} week" + ("s" if count != 1 else "")
-    elif seconds < year:
-        count = int(seconds // month)
-        if count < 12:
-            relative_format = f"{count} month" + ("s" if count != 1 else "")
-        else:
-            relative_format = "1 year"
-    else:
-        count = int(seconds // year)
-        relative_format = f"{count} year" + ("s" if count != 1 else "")
-
-    return {"relative": relative_format, "absolute": absolute_format}
-
 # Autenticación y Registro de Usuarios
 @app.route('/register', methods=['POST'])
 def register():
@@ -201,6 +149,61 @@ def get_following(username):
     following = Follow.query.filter_by(follower_id=user.id).join(User, Follow.followed_id == User.id).all()
     following_data = [{'username': follow.followed.username, 'name': f'{follow.followed.first_name} {follow.followed.last_name}'} for follow in following]
     return jsonify(following_data)
+
+# Gestión de Seguimiento
+@app.route('/follow/<int:user_id>', methods=['POST'])
+@jwt_required()
+def follow_user(user_id):
+    current_user_id = get_jwt_identity()
+    if current_user_id == user_id:
+        return jsonify({"error": "Cannot follow yourself"}), 400
+
+    follow = Follow.query.filter_by(follower_id=current_user_id, followed_id=user_id).first()
+    if follow:
+        db.session.delete(follow)
+        db.session.commit()
+        new_follower_count = db.session.query(func.count(Follow.follower_id)).filter(Follow.followed_id == user_id).scalar()
+        return jsonify({"message": "Unfollowed successfully", "newFollowerCount": new_follower_count}), 200
+    else:
+        new_follow = Follow(follower_id=current_user_id, followed_id=user_id)
+        db.session.add(new_follow)
+        db.session.commit()
+        new_follower_count = db.session.query(func.count(Follow.follower_id)).filter(Follow.followed_id == user_id).scalar()
+        return jsonify({"message": "Followed successfully", "newFollowerCount": new_follower_count}), 201
+
+@app.route('/unfollow/<string:username>', methods=['POST'])
+@jwt_required()
+def unfollow_user(username):
+    current_user_id = get_jwt_identity()
+    user_to_unfollow = User.query.filter_by(username=username).first()
+
+    if not user_to_unfollow:
+        return jsonify({"error": "User not found"}), 404
+
+    follow = Follow.query.filter_by(follower_id=current_user_id, followed_id=user_to_unfollow.id).first()
+    if follow:
+        db.session.delete(follow)
+        db.session.commit()
+        return jsonify({"message": "Unfollowed successfully"}), 200
+    else:
+        return jsonify({"error": "You are not following this user"}), 400
+    
+@app.route('/remove_follower/<string:username>', methods=['POST'])
+@jwt_required()
+def remove_follower(username):
+    current_user_id = get_jwt_identity()
+    user_to_remove = User.query.filter_by(username=username).first()
+
+    if not user_to_remove:
+        return jsonify({"error": "User not found"}), 404
+
+    follow = Follow.query.filter_by(follower_id=user_to_remove.id, followed_id=current_user_id).first()
+    if follow:
+        db.session.delete(follow)
+        db.session.commit()
+        return jsonify({"message": "Removed follower successfully"}), 200
+    else:
+        return jsonify({"error": "This user is not following you"}), 400
 
 # Gestión de Posts
 @app.route('/posts', methods=['POST'])
@@ -422,7 +425,7 @@ def delete_comment(comment_id):
     db.session.commit()
     return jsonify({"message": "Comment deleted successfully"}), 200
 
-# Funciones de Búsqueda y Seguimiento
+# Funciones de Búsqueda
 @app.route('/search_users', methods=['GET'])
 def search_users():
     query = request.args.get('q', '')
@@ -452,25 +455,57 @@ def search_users():
         return jsonify(result)
     return jsonify([])
 
-@app.route('/follow/<int:user_id>', methods=['POST'])
-@jwt_required()
-def follow_user(user_id):
-    current_user_id = get_jwt_identity()
-    if current_user_id == user_id:
-        return jsonify({"error": "Cannot follow yourself"}), 400
+# Utilidades
+def format_datetime(value):
+    if not value:
+        return {"relative": "", "absolute": ""}
 
-    follow = Follow.query.filter_by(follower_id=current_user_id, followed_id=user_id).first()
-    if follow:
-        db.session.delete(follow)
-        db.session.commit()
-        new_follower_count = db.session.query(func.count(Follow.follower_id)).filter(Follow.followed_id == user_id).scalar()
-        return jsonify({"message": "Unfollowed successfully", "newFollowerCount": new_follower_count}), 200
+    # Asegurar que value sea "aware"
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+
+    # Formato absoluto
+    absolute_format = value.strftime("%d/%m/%Y %H:%M")
+
+    now = datetime.now(tz=timezone.utc)
+    diff = now - value
+    seconds = diff.total_seconds()
+
+    # Calcular los intervalos directamente en segundos
+    minute = 60
+    hour = minute * 60
+    day = hour * 24
+    week = day * 7
+    month = day * 30
+    year = day * 365
+
+    # Formato relativo
+    if seconds < minute:
+        count = int(seconds)
+        relative_format = f"{count} second" + ("s" if count != 1 else "")
+    elif seconds < hour:
+        count = int(seconds // minute)
+        relative_format = f"{count} minute" + ("s" if count != 1 else "")
+    elif seconds < day:
+        count = int(seconds // hour)
+        relative_format = f"{count} hour" + ("s" if count != 1 else "")
+    elif seconds < week:
+        count = int(seconds // day)
+        relative_format = f"{count} day" + ("s" if count != 1 else "")
+    elif seconds < week * 4:
+        count = int(seconds // week)
+        relative_format = f"{count} week" + ("s" if count != 1 else "")
+    elif seconds < year:
+        count = int(seconds // month)
+        if count < 12:
+            relative_format = f"{count} month" + ("s" if count != 1 else "")
+        else:
+            relative_format = "1 year"
     else:
-        new_follow = Follow(follower_id=current_user_id, followed_id=user_id)
-        db.session.add(new_follow)
-        db.session.commit()
-        new_follower_count = db.session.query(func.count(Follow.follower_id)).filter(Follow.followed_id == user_id).scalar()
-        return jsonify({"message": "Followed successfully", "newFollowerCount": new_follower_count}), 201
+        count = int(seconds // year)
+        relative_format = f"{count} year" + ("s" if count != 1 else "")
+
+    return {"relative": relative_format, "absolute": absolute_format}
 
 # Ejecución del Servidor
 if __name__ == '__main__':
