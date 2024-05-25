@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Context } from '../store/appContext';
-import '../styles/Following.css'
+import '../styles/Following.css';
 
 function Following() {
-    const { username } = useParams();
     const navigate = useNavigate();
+    const { username } = useParams();
     const { store } = useContext(Context);
     const [following, setFollowing] = useState([]);
     const [error, setError] = useState('');
@@ -36,6 +36,33 @@ function Following() {
         navigate(`/${userUsername}`);
     };
 
+    const handleUnfollow = (e, userUsername, index) => {
+        e.stopPropagation();
+        fetch(`http://127.0.0.1:5000/unfollow/${userUsername}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${store.token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Unfollowed successfully') {
+                    setFollowing(prevFollowing => {
+                        const updatedFollowing = [...prevFollowing];
+                        updatedFollowing.splice(index, 1);
+                        return updatedFollowing;
+                    });
+                } else {
+                    setError(data.error || 'Failed to unfollow user');
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                setError('Failed to unfollow user');
+            });
+    };
+
     if (error) {
         return <div>Error: {error}</div>;
     }
@@ -47,9 +74,16 @@ function Following() {
                     Following by {username}
                 </div>
             </div>
-            {following.map(user => (
+            {following.map((user, index) => (
                 <div className='following-users' key={user.username} onClick={() => handleNavigateToUserProfile(user.username)}>
-                    <b>{user.name}</b> (@{user.username})
+                    <div className='following-users-left'>
+                        <b>{user.name}</b> @{user.username}
+                    </div>
+                    {store.user.username === username && (
+                        <div className='following-users-right' onClick={(e) => handleUnfollow(e, user.username, index)}>
+                            <i className="fa-solid fa-xmark"></i>
+                        </div>
+                    )}
                 </div>
             ))}
         </>
