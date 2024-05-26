@@ -22,6 +22,18 @@
     justify-content: space-between;
 }
 
+.following-users-left {
+    display: block;
+}
+
+.following-users-left-name {
+    font-weight: bold;
+}
+
+.following-users-left-username {
+    font-size: 14px;
+}
+
 .following-users-right
 
 .following-users:hover {

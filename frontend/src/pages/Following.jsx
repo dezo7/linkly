@@ -77,7 +77,8 @@ function Following() {
             {following.map((user, index) => (
                 <div className='following-users' key={user.username} onClick={() => handleNavigateToUserProfile(user.username)}>
                     <div className='following-users-left'>
-                        <b>{user.name}</b> @{user.username}
+                        <div className='following-users-left-name'>{user.name}</div>
+                        <div className='following-users-left-username'>@{user.username}</div>
                     </div>
                     {store.user.username === username && (
                         <div className='following-users-right' onClick={(e) => handleUnfollow(e, user.username, index)}>

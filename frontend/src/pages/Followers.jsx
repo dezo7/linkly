@@ -77,7 +77,8 @@ function Followers() {
             {followers.map((user, index) => (
                 <div className='followers-users' key={user.username} onClick={() => handleNavigateToUserProfile(user.username)}>
                     <div className='followers-users-left'>
-                        <b>{user.name}</b> @{user.username}
+                        <div className='followers-users-left-name'>{user.name}</div>
+                        <div className='followers-users-left-username'>@{user.username}</div>
                     </div>
                     {store.user.username === username && (
                         <div className='followers-users-right' onClick={(e) => handleRemoveFollower(e, user.username, index)}>
