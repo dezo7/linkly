@@ -35,6 +35,15 @@
   border-style: solid;
   border-color: #ddd;
   padding: 5px;
+  display: block;
+}
+
+.search-results-result-name {
+  font-weight: bold;
+}
+
+.search-results-result-username {
+  font-size: 14px;
 }
 
 .search-results-result:hover {

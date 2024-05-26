@@ -49,9 +49,9 @@ function Search() {
             </div>
             <div className='search-results'>
                 {results.map(user => (
-                    <div className='search-results-result' key={user.username}
-                        onClick={() => navigateToUser(user.username)}>
-                        <b>{user.name}</b> @{user.username}
+                    <div className='search-results-result' key={user.username} onClick={() => navigateToUser(user.username)}>
+                        <div className='search-results-result-name'>{user.name}</div>
+                        <div className='search-results-result-username'>@{user.username}</div>
                     </div>
                 ))}
             </div>
