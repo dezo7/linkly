@@ -27,9 +27,15 @@
     padding-bottom: 10px;
 }
 
-.profile-content-location {
-    padding-bottom: 10px;
+.profile-content-info {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
 }
+
+.profile-content-info-location 
+
+.profile-content-info-date
 
 .profile-content-follows-followers,
 .profile-content-follows-following {

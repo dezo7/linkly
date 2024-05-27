@@ -120,6 +120,7 @@ def get_user_profile(username):
             "last_name": user.last_name,
             "email": user.email,
             "location": user.location,
+            "registered_at": user.registered_at.strftime('%d/%m/%Y'),
             "posts": posts_data,
             "followers": followers,
             "following": following,

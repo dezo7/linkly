@@ -85,8 +85,13 @@ function Profile() {
                         </Link>
                     </span>
                 </div>
-                <div className='profile-content-location'>
-                    <i className='fa-solid fa-location-dot'></i> <strong>Location:</strong> {profile.location || 'Not specified'}
+                <div className='profile-content-info'>
+                    <div className='profile-content-info-location'>
+                        <i className='fa-solid fa-location-dot'></i> <strong>Location:</strong> {profile.location || 'Not specified'}
+                    </div>
+                    <div className='profile-content-info-date'>
+                        <i className='fa-solid fa-calendar-days'></i> <strong>Registered at:</strong> {profile.registered_at || 'Not specified'}
+                    </div>
                 </div>
                 {store.user.username !== username && (
                     <button onClick={handleFollow}>{isFollowing ? 'Unfollow' : 'Follow'}</button>

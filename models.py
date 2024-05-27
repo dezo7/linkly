@@ -14,6 +14,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
     location = db.Column(db.String(100), nullable=True)
+    registered_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     followers = db.relationship('Follow', foreign_keys='Follow.followed_id', backref='followed', lazy='dynamic')
     following = db.relationship('Follow', foreign_keys='Follow.follower_id', backref='follower', lazy='dynamic')
