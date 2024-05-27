@@ -100,9 +100,13 @@ function Profile() {
             <div className='profile-title'>
                 <div className='profile-title-title'>Posts</div>
             </div>
-            {profile.posts.map(post => (
-                <PostCard key={post.id} post={post} />
-            ))}
+            {profile.posts.length > 0 ? (
+                profile.posts.map(post => (
+                    <PostCard key={post.id} post={post} />
+                ))
+            ) : (
+                <div className="profile-no-posts-message">There are no posts in this profile at the moment.</div>
+            )}
         </>
     );
 }

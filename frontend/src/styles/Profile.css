@@ -41,3 +41,10 @@
 .profile-content-follows-following {
     cursor: pointer;
 }
+
+.profile-no-posts-message {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    padding: 10px;
+}

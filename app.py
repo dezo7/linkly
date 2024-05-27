@@ -1,4 +1,5 @@
 import os
+import pytz
 from flask import Flask, request, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -25,6 +26,64 @@ db.init_app(app)
 Migrate(app, db)
 jwt = JWTManager(app)
 cors = CORS(app, origins=["http://localhost:5173"])
+
+# Configurar zona horaria
+santiago_tz = pytz.timezone('America/Santiago')
+
+# Utilidades
+def format_datetime(value):
+    if not value:
+        return {"relative": "", "absolute": ""}
+
+    # Asegurar que value sea "aware"
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+
+    # Convertir a la zona horaria de Santiago de Chile
+    value = value.astimezone(santiago_tz)
+
+    # Formato absoluto
+    absolute_format = value.strftime("%d/%m/%Y %H:%M")
+
+    now = datetime.now(tz=timezone.utc)
+    diff = now - value
+    seconds = diff.total_seconds()
+
+    # Calcular los intervalos directamente en segundos
+    minute = 60
+    hour = minute * 60
+    day = hour * 24
+    week = day * 7
+    month = day * 30
+    year = day * 365
+
+    # Formato relativo
+    if seconds < minute:
+        count = int(seconds)
+        relative_format = f"{count} second" + ("s" if count != 1 else "")
+    elif seconds < hour:
+        count = int(seconds // minute)
+        relative_format = f"{count} minute" + ("s" if count != 1 else "")
+    elif seconds < day:
+        count = int(seconds // hour)
+        relative_format = f"{count} hour" + ("s" if count != 1 else "")
+    elif seconds < week:
+        count = int(seconds // day)
+        relative_format = f"{count} day" + ("s" if count != 1 else "")
+    elif seconds < week * 4:
+        count = int(seconds // week)
+        relative_format = f"{count} week" + ("s" if count != 1 else "")
+    elif seconds < year:
+        count = int(seconds // month)
+        if count < 12:
+            relative_format = f"{count} month" + ("s" if count != 1 else "")
+        else:
+            relative_format = "1 year"
+    else:
+        count = int(seconds // year)
+        relative_format = f"{count} year" + ("s" if count != 1 else "")
+
+    return {"relative": relative_format, "absolute": absolute_format}
 
 # Autenticación y Registro de Usuarios
 @app.route('/register', methods=['POST'])
@@ -120,7 +179,7 @@ def get_user_profile(username):
             "last_name": user.last_name,
             "email": user.email,
             "location": user.location,
-            "registered_at": user.registered_at.strftime('%d/%m/%Y'),
+            "registered_at": user.registered_at.astimezone(santiago_tz).strftime('%d/%m/%Y'),
             "posts": posts_data,
             "followers": followers,
             "following": following,
@@ -455,58 +514,6 @@ def search_users():
         result = [{'username': user.username, 'name': f'{user.first_name} {user.last_name}'} for user in users]
         return jsonify(result)
     return jsonify([])
-
-# Utilidades
-def format_datetime(value):
-    if not value:
-        return {"relative": "", "absolute": ""}
-
-    # Asegurar que value sea "aware"
-    if value.tzinfo is None:
-        value = value.replace(tzinfo=timezone.utc)
-
-    # Formato absoluto
-    absolute_format = value.strftime("%d/%m/%Y %H:%M")
-
-    now = datetime.now(tz=timezone.utc)
-    diff = now - value
-    seconds = diff.total_seconds()
-
-    # Calcular los intervalos directamente en segundos
-    minute = 60
-    hour = minute * 60
-    day = hour * 24
-    week = day * 7
-    month = day * 30
-    year = day * 365
-
-    # Formato relativo
-    if seconds < minute:
-        count = int(seconds)
-        relative_format = f"{count} second" + ("s" if count != 1 else "")
-    elif seconds < hour:
-        count = int(seconds // minute)
-        relative_format = f"{count} minute" + ("s" if count != 1 else "")
-    elif seconds < day:
-        count = int(seconds // hour)
-        relative_format = f"{count} hour" + ("s" if count != 1 else "")
-    elif seconds < week:
-        count = int(seconds // day)
-        relative_format = f"{count} day" + ("s" if count != 1 else "")
-    elif seconds < week * 4:
-        count = int(seconds // week)
-        relative_format = f"{count} week" + ("s" if count != 1 else "")
-    elif seconds < year:
-        count = int(seconds // month)
-        if count < 12:
-            relative_format = f"{count} month" + ("s" if count != 1 else "")
-        else:
-            relative_format = "1 year"
-    else:
-        count = int(seconds // year)
-        relative_format = f"{count} year" + ("s" if count != 1 else "")
-
-    return {"relative": relative_format, "absolute": absolute_format}
 
 # Ejecución del Servidor
 if __name__ == '__main__':
